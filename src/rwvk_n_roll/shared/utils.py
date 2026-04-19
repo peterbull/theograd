@@ -1,14 +1,23 @@
 from pathlib import Path
 import torch
+from enum import Enum
+import rwvk_n_roll
+
+DATAPATH = Path("../../../data/shakes.txt")
+
+
+class ModelName(Enum):
+    BIGRAM = "bigram.pt"
+    RNN = "rnn.pt"
+
 
 MODEL_DIR = Path("output")
-MODEL_NAME = "bigram.pt"
 
 
-def get_model_path():
+def get_model_path(model_name: ModelName):
     if not MODEL_DIR.exists():
         MODEL_DIR.mkdir(exist_ok=True)
-    return MODEL_DIR / MODEL_NAME
+    return MODEL_DIR / model_name.value
 
 
 def get_device():
@@ -21,4 +30,5 @@ def get_device():
 
 
 DEVICE = get_device()
-MODEL_PATH = get_model_path()
+BIGRAM_MODEL_PATH = get_model_path(ModelName.BIGRAM)
+RNN_MODEL_PATH = get_model_path(ModelName.RNN)
