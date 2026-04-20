@@ -1,0 +1,11 @@
+[project]
+name = "rwkv-n-roll"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "jaxtyping>=0.3.9",
+    "pydantic>=2.13.2",
+    "torch>=2.11.0",
+]
