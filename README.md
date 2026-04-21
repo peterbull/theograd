@@ -1,2 +1,2 @@
-# rwkv-n-roll
-playing around with rwkv training
+# theograd
+a tensor framework in zig
