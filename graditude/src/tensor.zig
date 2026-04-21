@@ -1,4 +1,14 @@
 const std = @import("std");
+const tensorError = @import("error.zig").tensorError;
+const TensorError = @import("error.zig").TensorError;
+
+fn numItems(shape: []usize) usize {
+    var total: usize = 1;
+    for (shape) |item| {
+        total *= item;
+    }
+    return total;
+}
 
 pub fn Tensor(comptime T: type) type {
     return struct {
@@ -8,11 +18,14 @@ pub fn Tensor(comptime T: type) type {
 
         const Self = @This();
 
-        pub fn empty(shape: []usize, allocator: std.mem.Allocator) !Self {
-            var total: usize = 1;
-            for (shape) |item| {
-                total *= item;
+        pub fn ensureShape(data: []T, total: usize) !void {
+            if (data.len != total) {
+                return tensorError(TensorError.SHAPE_MISMATCH);
             }
+        }
+
+        pub fn empty(shape: []usize, allocator: std.mem.Allocator) !Self {
+            const total = numItems(shape);
             const data = try allocator.alloc(T, total);
             const shape_copy = try allocator.dupe(usize, shape);
             return Self{ .data = data, .shape = shape_copy, .allocator = allocator };
@@ -52,6 +65,14 @@ pub fn Tensor(comptime T: type) type {
                 flat_index += idx * stride;
             }
             return self.data[flat_index];
+        }
+        pub fn fromSlice(data: []T, shape: []usize, allocator: std.mem.Allocator) !Self {
+            // TODO: data/shape mismatch err
+            const total = numItems(shape);
+            try ensureShape(data, total);
+            const data_copy = try allocator.dupe(T, data);
+            const shape_copy = try allocator.dupe(usize, shape);
+            return Self{ .data = data_copy, .shape = shape_copy, .allocator = allocator };
         }
 
         pub fn deinit(self: *Self) void {
