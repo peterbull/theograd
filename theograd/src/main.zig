@@ -5,6 +5,7 @@ const Tensor = @import("tensor.zig").Tensor;
 // pub fn matmul(x: Tensor, y: Tensor) Tensor {
 //     unreachable;
 // }
+
 pub fn main(init: std.process.Init) !void {
     const gpa = init.gpa;
     var arr = [_]usize{
@@ -44,5 +45,7 @@ pub fn main(init: std.process.Init) !void {
     std.debug.print("fromslice data: {any}\n", .{F32FromSlice.data});
     std.debug.print("break\n", .{});
     std.debug.print("stride data: {any}\n", .{F32FromSlice.stride});
+    std.debug.print("break\n", .{});
+    std.debug.print("fmt: {f}", .{F32FromSlice});
     std.debug.print("break\n", .{});
 }

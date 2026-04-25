@@ -18,17 +18,17 @@ pub fn Tensor(comptime T: type) type {
         stride: []usize,
 
         const Self = @This();
-        pub fn format(self: *Self, comptime fmt: []const u8, options: std.fmt.Options, writer: anytype) !void {
-            _ = fmt;
-            _ = options;
+
+        pub fn format(self: Self, writer: *std.Io.Writer) !void {
             // print as many [ as tensor dims
             for (0..self.shape.len) |_| {
                 try writer.writeAll("[");
             }
 
             for (self.data) |_| {}
-            try writer.print("tensor()");
+            try writer.print("tensor()", .{});
         }
+
         pub fn ensureShape(data: []T, total: usize) !void {
             if (data.len != total) {
                 return tensorError(TensorError.SHAPE_MISMATCH);
@@ -56,6 +56,7 @@ pub fn Tensor(comptime T: type) type {
             stride[shape.len - 1] = 1;
 
             // then walk backwards from the shape end and multiply each time along the way
+            // except for the first dim
             var i: usize = shape.len - 1;
             while (i > 0) {
                 i -= 1;
