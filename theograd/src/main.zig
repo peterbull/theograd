@@ -8,12 +8,12 @@ const Tensor = @import("tensor.zig").Tensor;
 
 pub fn main(init: std.process.Init) !void {
     const gpa = init.gpa;
-    var arr = [_]usize{
+    var shape_arr = [_]usize{
         3,
         4,
     };
 
-    var F32Tens = try Tensor(f32).empty(&arr, gpa);
+    var F32Tens = try Tensor(f32).empty(&shape_arr, gpa);
     defer F32Tens.deinit();
 
     std.debug.print("break\n", .{});
@@ -28,7 +28,7 @@ pub fn main(init: std.process.Init) !void {
     std.debug.print("tens data: {any}\n", .{F32Tens.data});
     std.debug.print("break\n", .{});
 
-    var F16Zeros = try Tensor(f16).zeros(&arr, gpa);
+    var F16Zeros = try Tensor(f16).zeros(&shape_arr, gpa);
     defer F16Zeros.deinit();
 
     const val = F16Zeros.at(&.{ 0, 0 });
@@ -39,7 +39,7 @@ pub fn main(init: std.process.Init) !void {
 
     var slice_arr = [_]f32{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
 
-    var F32FromSlice = try Tensor(f32).fromSlice(&slice_arr, &arr, gpa);
+    var F32FromSlice = try Tensor(f32).fromSlice(&slice_arr, &shape_arr, gpa);
     defer F32FromSlice.deinit();
 
     std.debug.print("fromslice data: {any}\n", .{F32FromSlice.data});
@@ -47,5 +47,12 @@ pub fn main(init: std.process.Init) !void {
     std.debug.print("stride data: {any}\n", .{F32FromSlice.stride});
     std.debug.print("break\n", .{});
     std.debug.print("fmt: {f}", .{F32FromSlice});
+    std.debug.print("break\n", .{});
+    try F32Tens.printDim(1, 0);
+    const at_result = F32FromSlice.at(&.{1});
+    std.debug.print("stride data: {any}\n", .{at_result});
+    std.debug.print("break\n", .{});
+    F32FromSlice.set(&.{ 1, 1 }, 900);
+    std.debug.print("fromslice data: {any}\n", .{F32FromSlice.data});
     std.debug.print("break\n", .{});
 }

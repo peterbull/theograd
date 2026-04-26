@@ -19,11 +19,21 @@ pub fn Tensor(comptime T: type) type {
 
         const Self = @This();
 
-        pub fn format(self: Self, writer: *std.Io.Writer) !void {
-            // print as many [ as tensor dims
-            for (0..self.shape.len) |_| {
-                try writer.writeAll("[");
+        // TODO: add back "writer" instead of print
+        // TODO: loop back to this once there's a method 'index' for partial indices, will be cleaner.
+        pub fn printDim(self: *Self, dim: usize, offset: usize) !void {
+            std.debug.print("shape, {}", .{self.shape.len});
+            if (dim == self.shape.len - 1) {
+                // bottom
+                std.debug.print("dim, {}", .{dim});
+                std.debug.print("offset, {}", .{offset});
+            } else {
+                // self.printDim()
             }
+        }
+
+        pub fn format(self: Self, writer: *std.Io.Writer) !void {
+            try writer.writeAll("[");
 
             for (self.data) |_| {}
             try writer.print("tensor()", .{});
@@ -66,6 +76,14 @@ pub fn Tensor(comptime T: type) type {
             return stride;
         }
 
+        fn getFlatIndex(self: *Self, indices: []const usize) usize {
+            var flat_index: usize = 0;
+            for (indices, 0..) |idx, i| {
+                flat_index += idx * self.stride[i];
+            }
+            return flat_index;
+        }
+
         pub fn at(self: *Self, indices: []const usize) T {
             // example:
             // shape 3, 4, 5
@@ -85,12 +103,15 @@ pub fn Tensor(comptime T: type) type {
             //   [4, 3, 8, 0, 7]]])
             //   stride(20, 5, 1)
             //   flat_index = i * 20 + j * 5 + k * 1
-            var flat_index: usize = 0;
-            for (indices, 0..) |idx, i| {
-                flat_index += idx * self.stride[i];
-            }
+            const flat_index = self.getFlatIndex(indices);
             return self.data[flat_index];
         }
+
+        pub fn set(self: *Self, indices: []const usize, value: T) void {
+            const flat_index = self.getFlatIndex(indices);
+            self.data[flat_index] = value;
+        }
+
         pub fn fromSlice(data: []T, shape: []usize, allocator: std.mem.Allocator) !Self {
             const total = numItems(shape);
             try ensureShape(data, total);
