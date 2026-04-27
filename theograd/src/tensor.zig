@@ -13,8 +13,8 @@ fn numItems(shape: []usize) usize {
 pub fn Tensor(comptime T: type) type {
     return struct {
         data: []T,
-        shape: []usize,
         allocator: std.mem.Allocator,
+        shape: []usize,
         stride: []usize,
 
         const Self = @This();
@@ -162,6 +162,19 @@ test "tensor at returns correct value" {
     try std.testing.expectEqual(@as(f32, 2), tens.at(&.{ 0, 1 }));
     try std.testing.expectEqual(@as(f32, 5), tens.at(&.{ 1, 0 }));
     try std.testing.expectEqual(@as(f32, 12), tens.at(&.{ 2, 3 }));
+}
+test "tensor sets correct value" {
+    const gpa = std.testing.allocator;
+    var shape = [_]usize{ 3, 4 };
+    var data = [_]f32{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
+    var tens = try Tensor(f32).fromSlice(&data, &shape, gpa);
+    defer tens.deinit();
+
+    try std.testing.expectEqual(@as(f32, 6), tens.data[5]);
+
+    tens.set(&.{ 1, 1 }, 900);
+
+    try std.testing.expectEqual(@as(f32, 900), tens.data[5]);
 }
 
 test "tensor fromSlice has correct data" {
