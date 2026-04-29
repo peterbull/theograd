@@ -12,7 +12,7 @@ pub fn main(init: std.process.Init) !void {
         3,
         4,
     };
-
+    var shape_arr_T = [_]usize{ 4, 3 };
     var F32Tens = try Tensor(f32).empty(&shape_arr, gpa);
     defer F32Tens.deinit();
 
@@ -42,6 +42,9 @@ pub fn main(init: std.process.Init) !void {
     var F32FromSlice = try Tensor(f32).fromSlice(&slice_arr, &shape_arr, gpa);
     defer F32FromSlice.deinit();
 
+    var F32FromSlice2 = try Tensor(f32).fromSlice(&slice_arr, &shape_arr_T, gpa);
+    defer F32FromSlice2.deinit();
+
     std.debug.print("fromslice data: {any}\n", .{F32FromSlice.data});
     std.debug.print("break\n", .{});
     std.debug.print("stride data: {any}\n", .{F32FromSlice.stride});
@@ -55,4 +58,8 @@ pub fn main(init: std.process.Init) !void {
     F32FromSlice.set(&.{ 1, 1 }, 900);
     std.debug.print("fromslice data: {any}\n", .{F32FromSlice.data});
     std.debug.print("break\n", .{});
+    const idx1 = F32FromSlice.at(&.{ 1, 0 });
+    std.debug.print("idx: {}", .{idx1});
+    std.debug.print("break\n", .{});
+    try F32FromSlice.matmul(F32FromSlice);
 }

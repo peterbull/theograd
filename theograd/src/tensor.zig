@@ -39,10 +39,18 @@ pub fn Tensor(comptime T: type) type {
             try writer.print("tensor()", .{});
         }
 
-        pub fn ensureShape(data: []T, total: usize) !void {
+        pub fn ensureValidShape(data: []T, total: usize) !void {
             if (data.len != total) {
                 return tensorError(TensorError.SHAPE_MISMATCH);
             }
+        }
+
+        pub fn getCommonDim(self: *Self, tens: Tensor(T)) !usize {
+            const common_dim = self.shape[self.shape.len - 1];
+            if (common_dim != tens.shape[0]) {
+                return tensorError(TensorError.SHAPE_MISMATCH);
+            }
+            return common_dim;
         }
 
         pub fn empty(shape: []usize, allocator: std.mem.Allocator) !Self {
@@ -112,9 +120,22 @@ pub fn Tensor(comptime T: type) type {
             self.data[flat_index] = value;
         }
 
+        pub fn matmul(self: *Self, tens: Tensor(T)) !void {
+            // const common_dim = try getCommonDim(tens);
+
+            // go through rows 0..end(mat1)
+            //      each row, get each item in mat1, each item at mat2.at(row_num, i)
+            //
+            // (3,4) @ (4, 2)
+            _ = tens;
+            for (0..self.shape[0]) |i| { // 3
+                std.debug.print("i: {}", .{i});
+            }
+        }
+
         pub fn fromSlice(data: []T, shape: []usize, allocator: std.mem.Allocator) !Self {
             const total = numItems(shape);
-            try ensureShape(data, total);
+            try ensureValidShape(data, total);
             const data_copy = try allocator.dupe(T, data);
             const stride = try getStride(shape, allocator);
             const shape_copy = try allocator.dupe(usize, shape);
@@ -163,6 +184,7 @@ test "tensor at returns correct value" {
     try std.testing.expectEqual(@as(f32, 5), tens.at(&.{ 1, 0 }));
     try std.testing.expectEqual(@as(f32, 12), tens.at(&.{ 2, 3 }));
 }
+
 test "tensor sets correct value" {
     const gpa = std.testing.allocator;
     var shape = [_]usize{ 3, 4 };
