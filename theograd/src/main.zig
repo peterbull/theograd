@@ -61,5 +61,13 @@ pub fn main(init: std.process.Init) !void {
     const idx1 = F32FromSlice.at(&.{ 1, 0 });
     std.debug.print("idx: {}", .{idx1});
     std.debug.print("break\n", .{});
-    try F32FromSlice.matmul(F32FromSlice);
+    var data_arr = [_]f32{ 1, 2, 3, 4, 5, 6 };
+    var data_arr2 = [_]f32{ 1, 2, 3, 4, 5, 6 };
+    var mat_1_shape = [_]usize{ 2, 3 };
+    var mat_2_shape = [_]usize{ 3, 2 };
+    var F32FromSlice3 = try Tensor(f32).fromSlice(&data_arr, &mat_1_shape, gpa);
+    var F32FromSlice4 = try Tensor(f32).fromSlice(&data_arr2, &mat_2_shape, gpa);
+    defer F32FromSlice3.deinit();
+    defer F32FromSlice4.deinit();
+    try F32FromSlice3.matmul(F32FromSlice4);
 }

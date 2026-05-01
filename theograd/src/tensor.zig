@@ -126,11 +126,19 @@ pub fn Tensor(comptime T: type) type {
             // go through rows 0..end(mat1)
             //      each row, get each item in mat1, each item at mat2.at(row_num, i)
             //
-            // (3,4) @ (4, 2)
+            // (2,3) @ (3, 2)
+            // [[1,2,3],      <-- [1,2,3,4,5,6]
+            // [4,5,6]]
+            // @
+            // [[1, 2],       <-- [1,2,3,4,5,6]
+            // [3, 4],
+            // [5, 6]]
+            //
             _ = tens;
-            for (0..self.shape[0]) |i| { // 3
-                std.debug.print("i: {}", .{i});
-            }
+            // for (0..self.shape[0]) |i| { // 3
+            //     std.debug.print("i: {}", .{i});
+            // }
+            std.debug.print("self stride: {any}", .{self.stride});
         }
 
         pub fn fromSlice(data: []T, shape: []usize, allocator: std.mem.Allocator) !Self {
