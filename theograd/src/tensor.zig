@@ -126,18 +126,24 @@ pub fn Tensor(comptime T: type) type {
             // go through rows 0..end(mat1)
             //      each row, get each item in mat1, each item at mat2.at(row_num, i)
             //
-            // (2,3) @ (3, 2)
+            //                shape(2, 3)
             // [[1,2,3],      <-- [1,2,3,4,5,6]
-            // [4,5,6]]
+            // [4,5,6]]       stride(3,1)
+            //                [[1,2,3,][4,5,6]]
             // @
+            //                shape(3, 2)
             // [[1, 2],       <-- [1,2,3,4,5,6]
-            // [3, 4],
-            // [5, 6]]
+            // [3, 4],        stride(2,1)
+            // [5, 6]]        [[1,2,][3,4,][5,6]]
             //
-            _ = tens;
-            // for (0..self.shape[0]) |i| { // 3
-            //     std.debug.print("i: {}", .{i});
-            // }
+            var new_shape = [_]usize{};
+            var result = try Tensor(T).empty(.{});
+            for (self.shape) |dim| {
+                var total: usize = 0;
+                for (0..dim) |i| {
+                    total += self.at(&.{ dim, i }) * tens.at(.{ i, dim });
+                }
+            }
             std.debug.print("self stride: {any}", .{self.stride});
         }
 

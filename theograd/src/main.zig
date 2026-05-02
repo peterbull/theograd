@@ -70,4 +70,5 @@ pub fn main(init: std.process.Init) !void {
     defer F32FromSlice3.deinit();
     defer F32FromSlice4.deinit();
     try F32FromSlice3.matmul(F32FromSlice4);
+    try F32FromSlice4.matmul(F32FromSlice3);
 }
