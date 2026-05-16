@@ -32,7 +32,7 @@ class RNNModel(nn.Module):
             x_t = embed[:, t, :]
             # TODO: concatenate current input with previous hidden state
             # shape: (B, n_embd + hidden_size)
-
+             
             # TODO: compute new hidden state using the linear layer + activation
 
             # TODO: compute logit for this timestep from the hidden state

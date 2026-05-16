@@ -121,7 +121,6 @@ pub fn Tensor(comptime T: type) type {
         }
 
         pub fn matmul(self: *Self, tens: Tensor(T)) !void {
-            // const common_dim = try getCommonDim(tens);
 
             // go through rows 0..end(mat1)
             //      each row, get each item in mat1, each item at mat2.at(row_num, i)
@@ -135,7 +134,8 @@ pub fn Tensor(comptime T: type) type {
             // [[1, 2],       <-- [1,2,3,4,5,6]
             // [3, 4],        stride(2,1)
             // [5, 6]]        [[1,2,][3,4,][5,6]]
-            //
+            // a[-1] has to equal b[2];
+
             var new_shape = [_]usize{};
             var result = try Tensor(T).empty(.{});
             for (self.shape) |dim| {
